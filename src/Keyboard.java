@@ -30,6 +30,8 @@ public class Keyboard {
 	}
 
 	public void render(Graphics2D g) {
+		if(instName.equals("Unused"))
+			return;
 		g.setColor(Color.WHITE);
 		g.drawString(instName, X_OFFSET, Y_OFFSET - 2);
 		double keyWidth = width / 70;
@@ -104,7 +106,7 @@ public class Keyboard {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return "";
+		return "Unknown";
 	}
 
 	public void setProgram(int prog) {
@@ -114,5 +116,7 @@ public class Keyboard {
 
 	public void setPressed(int idx, int pressed) {
 		isPressed[idx] = pressed;
+		if(this.instName.equals("Unused"))
+			this.instName = "Unknown";
 	}
 }

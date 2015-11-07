@@ -7,7 +7,7 @@ public class MIDIVisualizer extends JFrame {
 
 	private MIDIPanel mp;
 
-	public static String MIDI_NAME = "samp/tetrisA2.mid";
+	public static String MIDI_NAME = "samp/unowenfixed.mid";
 
 	public MIDIVisualizer() {
 		super("MIDI Visualizer: " + MIDI_NAME);
