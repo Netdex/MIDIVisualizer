@@ -3,13 +3,14 @@ import java.awt.Graphics2D;
 
 import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Patch;
 
 public class Keyboard {
 
 	private static int X_OFFSET = 30;
-	private static final int Y_HEIGHT = 40;
+	private int Y_OFFSET;
+
+	private static final int SHADOW_HEIGHT = 5;
+	private static final int Y_HEIGHT = 37;
 
 	private static final boolean[] SPECIAL_KEYS = { false, true, false, true, false, false, true,
 			false, true, false, true, false };
@@ -20,20 +21,17 @@ public class Keyboard {
 	private int program = 0;
 
 	private int width;
-	private int yoffset;
 
 	public Keyboard(int width, int yoffset) {
 		this.width = width;
-		this.yoffset = yoffset;
-		
+		this.Y_OFFSET = yoffset;
+
 		this.reset();
 	}
 
 	public void render(Graphics2D g) {
-		if(instName.equals("Unused"))
-			return;
 		g.setColor(Color.WHITE);
-		g.drawString(instName, X_OFFSET, yoffset - 2);
+		g.drawString(instName, X_OFFSET, Y_OFFSET - 2);
 		double keyWidth = width / 70;
 		X_OFFSET = (int) ((width - keyWidth * 70) / 2);
 		double keyPos = 0;
@@ -43,14 +41,17 @@ public class Keyboard {
 				if (!SPECIAL_KEYS[key]) {
 					if (isPressed[noteNo] != 0) {
 						g.setColor(Color.PINK);
-						g.fillRect((int) keyPos + X_OFFSET, yoffset, (int) keyWidth, Y_HEIGHT);
-					}
-					else{
+						g.fillRect((int) keyPos + X_OFFSET, Y_OFFSET, (int) keyWidth, Y_HEIGHT);
+					} else {
 						g.setColor(Color.WHITE);
-						g.fillRect((int) keyPos + X_OFFSET, yoffset, (int) keyWidth, Y_HEIGHT);
+						g.fillRect((int) keyPos + X_OFFSET, Y_OFFSET, (int) keyWidth,
+								Y_HEIGHT - SHADOW_HEIGHT);
+						g.setColor(Color.GRAY);
+						g.fillRect((int) keyPos + X_OFFSET, Y_OFFSET + Y_HEIGHT - SHADOW_HEIGHT,
+								(int) keyWidth, SHADOW_HEIGHT);
 					}
 					g.setColor(Color.BLACK);
-					g.drawRect((int) keyPos + X_OFFSET, yoffset, (int) keyWidth, Y_HEIGHT);
+					g.drawRect((int) keyPos + X_OFFSET, Y_OFFSET, (int) keyWidth, Y_HEIGHT);
 					keyPos += keyWidth;
 				}
 			}
@@ -62,15 +63,18 @@ public class Keyboard {
 				if (SPECIAL_KEYS[key]) {
 					if (isPressed[noteNo] != 0) {
 						g.setColor(Color.RED);
-						g.fillRect((int) (keyPos - keyWidth / 3) + X_OFFSET, yoffset,
+						g.fillRect((int) (keyPos - keyWidth / 3) + X_OFFSET, Y_OFFSET,
 								(int) (keyWidth * 2 / 3.0), Y_HEIGHT / 2);
 					} else {
 						g.setColor(Color.DARK_GRAY);
-						g.fillRect((int) (keyPos - keyWidth / 3) + X_OFFSET, yoffset,
-								(int) (keyWidth * 2 / 3.0), Y_HEIGHT / 2);
+						g.fillRect((int) (keyPos - keyWidth / 3) + X_OFFSET, Y_OFFSET,
+								(int) (keyWidth * 2 / 3.0), Y_HEIGHT / 2 - SHADOW_HEIGHT / 2);
+						g.setColor(Color.BLACK);
+						g.fillRect((int) (keyPos - keyWidth / 3) + X_OFFSET, Y_OFFSET + Y_HEIGHT / 2 - SHADOW_HEIGHT / 2,
+								(int) (keyWidth * 2 / 3.0), SHADOW_HEIGHT / 2);
 					}
 					g.setColor(Color.BLACK);
-					g.drawRect((int) (keyPos - keyWidth / 3) + X_OFFSET, yoffset,
+					g.drawRect((int) (keyPos - keyWidth / 3) + X_OFFSET, Y_OFFSET,
 							(int) (keyWidth * 2 / 3.0), Y_HEIGHT / 2);
 				} else {
 					keyPos += keyWidth;
@@ -80,18 +84,18 @@ public class Keyboard {
 
 	}
 
-	public void reset(){
+	public void reset() {
 		this.instName = "Unused";
-		for(int i = 0; i < 128; i++)
+		for (int i = 0; i < 128; i++)
 			isPressed[i] = 0;
 	}
-	
+
 	private static String getInstName(int program) {
 		try {
 			Instrument[] inst = MidiSystem.getSynthesizer().getAvailableInstruments();
 			String instName = "";
 			for (int i = 0; i < inst.length; i++) {
-				if (inst[i].getPatch().getProgram() == program){
+				if (inst[i].getPatch().getProgram() == program) {
 					instName = inst[i].getName();
 					break;
 				}

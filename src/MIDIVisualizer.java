@@ -1,7 +1,5 @@
 import java.io.File;
 
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequence;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
@@ -9,7 +7,7 @@ public class MIDIVisualizer extends JFrame {
 
 	private MIDIPanel mp;
 
-	public static String MIDI_NAME = "samp/banomico.mid";
+	public static String MIDI_NAME = "samp/tetrisA2.mid";
 
 	public MIDIVisualizer() {
 		super("MIDI Visualizer: " + MIDI_NAME);

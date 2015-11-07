@@ -1,6 +1,5 @@
 import java.io.PrintStream;
 
-import javax.sound.midi.ControllerEventListener;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
