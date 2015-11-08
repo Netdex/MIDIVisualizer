@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.io.File;
 
 import javax.swing.JFrame;
@@ -7,13 +8,13 @@ public class MIDIVisualizer extends JFrame {
 
 	private MIDIPanel mp;
 
-	public static String MIDI_NAME = "samp/dywc.mid";
+	public static String MIDI_NAME = "samp/smdr08_21medley.mid";
 
 	public MIDIVisualizer() {
 		super("MIDI Visualizer: " + MIDI_NAME);
-		this.setResizable(false);
+//		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		this.setMinimumSize(new Dimension(1024, 950));
 		mp = new MIDIPanel();
 		this.add(mp);
 //		new Thread(){

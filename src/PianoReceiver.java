@@ -73,7 +73,7 @@ public class PianoReceiver implements Receiver, MetaEventListener {
 				strTimeStamp = "timestamp " + lTimeStamp + " us: ";
 			}
 		}
-		m_printStream.println(strTimeStamp + strMessage);
+//		m_printStream.println(strTimeStamp + strMessage);
 //		System.out.println(message.getClass().toString());
 		mv.setStatus(strTimeStamp + strMessage);
 	}
@@ -84,13 +84,13 @@ public class PianoReceiver implements Receiver, MetaEventListener {
 		case 0x80:
 			strMessage = String.format("note OFF %3s velocity: %03d", getKeyName(message.getData1()), message.getData2());
 			mv.getKeyboards()[message.getChannel()].setPressed(message.getData1(), 0);
-			mv.repaint();
+//			mv.repaint();
 			break;
 
 		case 0x90:
 			strMessage = String.format("note ON  %3s velocity: %03d", getKeyName(message.getData1()), message.getData2());
 			mv.getKeyboards()[message.getChannel()].setPressed(message.getData1(), message.getData2());
-			mv.repaint();
+//			mv.repaint();
 			break;
 
 		case 0xa0:
@@ -105,7 +105,7 @@ public class PianoReceiver implements Receiver, MetaEventListener {
 		case 0xc0:
 			strMessage = "program change " + message.getData1();
 			mv.getKeyboards()[message.getChannel()].setProgram(message.getData1());
-			mv.repaint();
+//			mv.repaint();
 			break;
 
 		case 0xd0:
