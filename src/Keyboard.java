@@ -44,6 +44,8 @@ public class Keyboard {
 					if (isPressed[noteNo] != 0) {
 						g.setColor(Color.PINK);
 						g.fillRect((int) keyPos + X_OFFSET, Y_OFFSET, (int) keyWidth, Y_HEIGHT);
+						g.setColor(Color.RED);
+						g.drawString(PianoReceiver.getKeyName(noteNo).charAt(0) + "", (int) keyPos + X_OFFSET + 5, Y_OFFSET + Y_HEIGHT - 7);
 					} else {
 						g.setColor(Color.WHITE);
 						g.fillRect((int) keyPos + X_OFFSET, Y_OFFSET, (int) keyWidth,
@@ -51,11 +53,15 @@ public class Keyboard {
 						g.setColor(Color.GRAY);
 						g.fillRect((int) keyPos + X_OFFSET, Y_OFFSET + Y_HEIGHT - SHADOW_HEIGHT,
 								(int) keyWidth, SHADOW_HEIGHT);
+						g.setColor(Color.LIGHT_GRAY);
+						g.drawString(PianoReceiver.getKeyName(noteNo).charAt(0) + "", (int) keyPos + X_OFFSET + 5, Y_OFFSET + Y_HEIGHT - 7);
 					}
 					g.setColor(Color.BLACK);
 					g.drawRect((int) keyPos + X_OFFSET, Y_OFFSET, (int) keyWidth, Y_HEIGHT);
 					keyPos += keyWidth;
 				}
+				
+				
 			}
 		}
 		keyPos = 0;
@@ -90,6 +96,7 @@ public class Keyboard {
 		this.instName = "Unused";
 		for (int i = 0; i < 128; i++)
 			isPressed[i] = 0;
+		this.program = 0;
 	}
 
 	private static String getInstName(int program) {
