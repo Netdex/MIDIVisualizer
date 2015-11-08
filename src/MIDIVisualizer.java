@@ -15,6 +15,7 @@ public class MIDIVisualizer extends JFrame {
 //		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setMinimumSize(new Dimension(1024, 950));
+		
 		mp = new MIDIPanel();
 		this.add(mp);
 //		new Thread(){
@@ -34,6 +35,7 @@ public class MIDIVisualizer extends JFrame {
 //			}
 //		}.start();
 		mp.loadSequence(new File(MIDI_NAME));
+		
 	}
 
 	public static void main(String[] args) throws Exception {

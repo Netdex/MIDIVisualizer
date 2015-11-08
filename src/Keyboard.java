@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiSystem;
@@ -8,7 +9,7 @@ import javax.sound.midi.MidiSystem;
 public class Keyboard {
 
 	private int X_OFFSET = 30;
-
+	private int CHANNEL_NUMBER;
 	public static final int SHADOW_HEIGHT = 5;
 	public static final int KEY_HEIGHT = 37;
 
@@ -19,21 +20,36 @@ public class Keyboard {
 
 	private String instName;
 	private int program = 0;
-
+	private static final int FADE_LENGTH = 64;
+	private int trackIndicatorFade = 0;
+	
+	private Rectangle muteButton = new Rectangle(0,0,0,0);
+	
 	private MIDIPanel mp;
 
-	public Keyboard(MIDIPanel mp) {
+	private ChordIdentifier ci = new ChordIdentifier();
+	
+	public Keyboard(MIDIPanel mp, int trackNumber) {
 		this.mp = mp;
-
+		this.CHANNEL_NUMBER = trackNumber;
 		this.reset();
 	}
 
 	public void render(Graphics2D g, int Y_OFFSET) {
 		if (instName.equals("Unused"))
 			return;
+		
 		g.setColor(Color.WHITE);
 		g.drawString(instName, X_OFFSET, Y_OFFSET - 2);
-
+		String[] chords = ci.getChordName(this.getAllOnKeys());
+		if(chords.length > 0){
+			g.setColor(Color.CYAN);
+			String crds = "";
+			for(String s : chords){
+				crds += s + " OR ";
+			}
+			g.drawString(crds.substring(0, crds.length() - 4), X_OFFSET + 100, Y_OFFSET - 2);
+		}
 		double keyWidth = 1024 / 70;
 		X_OFFSET = (int) ((mp.getWidth() - keyWidth * 70) / 2);
 
@@ -43,12 +59,18 @@ public class Keyboard {
 		g.fillRect(X_OFFSET, Y_OFFSET, mp.getWidth() - 2 * X_OFFSET, KEY_HEIGHT);
 		g.setPaint(Color.BLACK);
 		
-		if(this.isPlaying()){
-			g.setColor(Color.GREEN);
-			g.fillRect(X_OFFSET - 10, Y_OFFSET, 5, KEY_HEIGHT);
+		this.muteButton = new Rectangle(X_OFFSET - 15, Y_OFFSET, 10, KEY_HEIGHT);
+		if(this.isMuted()){
+			g.setColor(Color.RED);
 		}
+		else{
+			g.setColor(new Color(0, 255, 0, (int)(255.0 * trackIndicatorFade / FADE_LENGTH)));
+		}
+		
+		g.fill(muteButton);
+		
 		g.setColor(Color.BLACK);
-		g.drawRect(X_OFFSET - 10, Y_OFFSET, 5, KEY_HEIGHT);
+		g.draw(muteButton);
 		double keyPos = 0;
 		for (int octave = 0; octave < 10; octave++) {
 			for (int key = 0; key < 12; key++) {
@@ -112,6 +134,11 @@ public class Keyboard {
 
 	}
 
+	public void tick(){
+		if(trackIndicatorFade > 0)
+			trackIndicatorFade--;
+	}
+	
 	public void reset() {
 		this.instName = "Unused";
 		for (int i = 0; i < 128; i++)
@@ -151,9 +178,38 @@ public class Keyboard {
 		this.program = prog;
 		instName = getInstName(program);
 	}
-
+	
+	public void setMuted(boolean mute){
+		mp.getSynthesizer().getChannels()[CHANNEL_NUMBER].setMute(mute);
+	}
+	
+	public boolean isMuted(){
+		return mp.getSynthesizer().getChannels()[CHANNEL_NUMBER].getMute();
+	}
+	
+	public Rectangle getMuteButtonBounds(){
+		return muteButton.getBounds();
+	}
+	
+	public int[] getAllOnKeys(){
+		int c = 0;
+		for(int i = 0; i < isPressed.length; i++){
+			if(isPressed[i] > 0)
+				c++;
+		}
+		int[] on = new int[c];
+		int idx = 0;
+		for(int i = 0; i < isPressed.length; i++){
+			if(isPressed[i] > 0)
+				on[idx++] = i;
+		}
+		return on;
+	}
 	public void setPressed(int idx, int pressed) {
 		isPressed[idx] = pressed;
+		if(pressed > 0){
+			trackIndicatorFade = FADE_LENGTH;
+		}
 		if (this.instName.equals("Unused"))
 			this.instName = "Unknown";
 	}

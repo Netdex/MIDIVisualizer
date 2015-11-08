@@ -3,8 +3,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 
 import javax.sound.midi.MidiSystem;
@@ -22,18 +25,20 @@ public class MIDIPanel extends JPanel {
 
 	private MIDIPanel mp = this;
 	private Sequencer seq;
-
+	private Synthesizer synth;
+	
 	public static int KEYBOARD_HEIGHT = Keyboard.KEY_HEIGHT + 18;
-
+	
 	public MIDIPanel() {
 		this.setPreferredSize(new Dimension(1024, 900));
 		this.setMinimumSize(new Dimension(1024, 900));
 		this.setBackground(Color.GRAY);
 		this.setFocusable(true);
 
+		
 		keyboards = new Keyboard[16];
 		for (int i = 0; i < 16; i++) {
-			keyboards[i] = new Keyboard(this);
+			keyboards[i] = new Keyboard(this, i);
 		}
 
 		this.addKeyListener(new KeyAdapter() {
@@ -78,10 +83,21 @@ public class MIDIPanel extends JPanel {
 				}
 			}
 		});
-
+		this.addMouseListener(new MouseAdapter(){
+			@Override
+			public void mousePressed(MouseEvent event){
+				Point p = event.getPoint();
+				for(Keyboard k : keyboards){
+					if(k.getMuteButtonBounds().contains(p)){
+						k.setMuted(!k.isMuted());
+						break;
+					}
+				}
+			}
+		});
 		try {
-			Synthesizer synthesizer = MidiSystem.getSynthesizer();
-			synthesizer.open();
+			synth = MidiSystem.getSynthesizer();
+			synth.open();
 
 			seq = MidiSystem.getSequencer();
 			seq.open();
@@ -96,6 +112,8 @@ public class MIDIPanel extends JPanel {
 				while (true) {
 					try {
 						mp.repaint();
+						for(Keyboard k : keyboards)
+							k.tick();
 						Thread.sleep(15);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -175,6 +193,10 @@ public class MIDIPanel extends JPanel {
 
 	public Sequencer getSequencer() {
 		return seq;
+	}
+	
+	public Synthesizer getSynthesizer(){
+		return synth;
 	}
 
 	public void setStatus(String status) {
